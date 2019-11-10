@@ -127,9 +127,68 @@ switch (command) {
 
 }
 
-function concertThis(){}
+function concertThis(){
+
+}
 function spotifyThis(){}
-function movieThis(){}
+function movieThis(){
+    // Here's the variable for axios. 
+    var axios = require("axios");
+
+// Here's the axios request. We need to code it so that the user input goes in place of the search variable. 
+
+// Details we need: 
+
+// Display to the user:
+// * Title of the movie.
+// * Year the movie came out.
+// * IMDB Rating of the movie.
+// * Rotten Tomatoes Rating of the movie.
+// * Country where the movie was produced.
+// * Language of the movie.
+// * Plot of the movie.
+// * Actors in the movie.
+
+axios.get("http://www.omdbapi.com/?t=" + value + "&y=&plot=short&apikey=trilogy").then(
+  function(response) {
+      // * Title of the movie.
+    console.log("Title: " + response.data.Title);
+    // / * Year the movie came out.
+    console.log("Release Year: " + response.data.Year);
+    // * IMDB Rating of the movie.
+    console.log("IMDB Rating: " + response.data.Ratings[0].Value);
+    // * Rotten Tomatoes Rating of the movie.
+    console.log("Rotten Tomatoes Rating: " + response.data.Ratings[1].Value);
+    // * Country where the movie was produced.
+    console.log("Country of Production: " + response.data.Country);
+    // * Language of the movie.
+    console.log("Language: " + response.data.Language);
+    // * Plot of the movie.
+    console.log("Plot: " + response.data.Plot);
+    // * Actors in the movie.
+    console.log("Actors: " + response.data.Actors);
+  })
+  .catch(function(error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log("---------------Data---------------");
+      console.log(error.response.data);
+      console.log("---------------Status---------------");
+      console.log(error.response.status);
+      console.log("---------------Status---------------");
+      console.log(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an object that comes back with details pertaining to the error that occurred.
+      console.log(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log("Error", error.message);
+    }
+    console.log(error.config);
+  });
+}
 function doWhatitSays(){}
 
 // check if userCommand is "concert-this" 
