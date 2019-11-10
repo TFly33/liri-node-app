@@ -90,14 +90,52 @@ console.log(command);
 var firstValue = process.argv;
 console.log(firstValue);
 
+// We'll use an empty string rather than a push. Makes it a bit simpler. 
 var value = "";
-
+// for loop to grab the user input. If it is more than one word, need it to turn into a string
 for (var i = 3; i < firstValue.length; i++) {
     if (i > 1 && i < firstValue.length) {
+        // if more than one word for index 3, then combine them together. 
         value = value + "+" + firstValue[i];
     }
     else {
+        // if just one word, make value equal that word. 
         value += value[i]
     }
 }
 console.log(value);
+
+switch (command) {
+    case "concert-this":
+        concertThis();
+        break;
+
+    case "spotify-this-song":
+        spotifyThis();
+        break;
+
+    case "movie-this":
+        movieThis();
+        break;
+
+    case "do-what-it-says":
+        doWhatItSays();
+        break;
+
+    default:
+        console.log("Make sure you use one of the four commands!")
+
+}
+
+function concertThis(){}
+function spotifyThis(){}
+function movieThis(){}
+function doWhatitSays(){}
+
+// check if userCommand is "concert-this" 
+//          If process arg = "concert-this" then (API CALL)
+// run an API call using axios to the bands-in-town API
+// inject the user's search term in the queryURL
+
+// Display name of venue, venue location, and the date of the event 
+// Format the date of the event to be MM/DD/YYYY (look at the moment node package documentation!)
