@@ -63,10 +63,11 @@
 // For help with the Spotify node package, read the npm documentation. You can also look at 22-WeatherNPM for an example of another node package API that is not using Axios.
 
 
-// require("dotenv").config();
-// var keys = require("./keys.js");
-// var spotify = new Spotify(keys.spotify);
-// console.log (spotify);
+require("dotenv").config();
+var keys = require("./keys.js");
+var Spotify = require("node-spotify-api");
+var spotify = new Spotify(keys.spotify);
+console.log (spotify);
 
 // Let's start by grabbing the input of the user and turning them into variables. 
 
@@ -97,6 +98,7 @@ switch (command) {
 
     case "spotify-this-song":
         spotifyThis();
+        // data.track.items 
         break;
 
     case "movie-this":
@@ -124,8 +126,8 @@ var axios = require("axios");
 
 // Then run a request with axios to the OMDB API with the movie specified
 axios.get("http://www.bandsintown.com/" + value).then(
-  function(response) {
-    console.log("Band Name: " + response.name);
+  function(response, data) {
+    console.log("Band Name: " + response.data[i].venue);
   })
   .catch(function(error) {
     if (error.response) {
