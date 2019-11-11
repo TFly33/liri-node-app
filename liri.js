@@ -24,13 +24,6 @@
 // Make a switch statement for the four commands. The default case should tell the user to try again.
 //     Can use the calculator for guidance on this. 
 
-// check if userCommand is "concert-this" 
-//          If process arg = "concert-this" then (API CALL)
-// run an API call using axios to the bands-in-town API
-// inject the user's search term in the queryURL
-
-// Display name of venue, venue location, and the date of the event 
-// Format the date of the event to be MM/DD/YYYY (look at the moment node package documentation!)
 
 // check if userCommand is "spotify-this-song"
 // Using Spotify Node package info and documentation, make a call to the Spotify API using the user's search term
@@ -43,21 +36,13 @@
 
 // Provide a default searchTerm if the user didn't provide an argument
 
-// check if userCommand is "movie-this"
+// -------------------------------------------
 
-// Use Axios to call the OMDB API using the user's search term. Use activities 17 and 18 as a reference!
-
-// Display to the user:
-// * Title of the movie.
-// * Year the movie came out.
-// * IMDB Rating of the movie.
-// * Rotten Tomatoes Rating of the movie.
-// * Country where the movie was produced.
-// * Language of the movie.
-// * Plot of the movie.
-// * Actors in the movie.
+// Still left for MOVIES: 
 
 // Provide a default search if the user didn't provide an argument.
+
+// --------------------------------------------
 
 // check if userCommand is "do-what-it-says" (DO THIS PART OF THE ASSIGNMENT ONLY IF THE OTHER THREE API CALLS WORK WELL!)
 
@@ -128,9 +113,44 @@ switch (command) {
 }
 
 function concertThis(){
+// check if userCommand is "concert-this" 
+//          If process arg = "concert-this" then (API CALL)
+// run an API call using axios to the bands-in-town API
+// inject the user's search term in the queryURL
+
+// Display name of venue, venue location, and the date of the event 
+// Format the date of the event to be MM/DD/YYYY (look at the moment node package documentation!)
+var axios = require("axios");
+
+// Then run a request with axios to the OMDB API with the movie specified
+axios.get("http://www.bandsintown.com/" + value).then(
+  function(response) {
+    console.log("Band Name: " + response.name);
+  })
+  .catch(function(error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log("---------------Data---------------");
+      console.log(error.response.data);
+      console.log("---------------Status---------------");
+      console.log(error.response.status);
+      console.log("---------------Status---------------");
+      console.log(error.response.headers);
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an object that comes back with details pertaining to the error that occurred.
+      console.log(error.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log("Error", error.message);
+    }
+    console.log(error.config);
+  });
 
 }
 function spotifyThis(){}
+
 function movieThis(){
     // Here's the variable for axios. 
     var axios = require("axios");
