@@ -10,10 +10,6 @@
 
 // * `do-what-it-says`
 
-
-
-
-
 // capture the command that the user puts in (process.argv[2]) I'll create a variable to make sure I can use it wherever I want, and not have to type process.argv in a million places. 
 
 
@@ -67,7 +63,6 @@ require("dotenv").config();
 var keys = require("./keys.js");
 var Spotify = require("node-spotify-api");
 var spotify = new Spotify(keys.spotify);
-console.log (spotify);
 
 // Let's start by grabbing the input of the user and turning them into variables. 
 
