@@ -89,7 +89,7 @@ switch (command) {
     break;
 
   case "spotify-this-song":
-    spotifyThis();
+    spotifyThis(value);
     // data.track.items 
     break;
 
@@ -159,12 +159,25 @@ function concertThis() {
     });
 
 }
-function spotifyThis() {
-  // Let's grab the Spotify API using axios as well. 
-  // console.log(spotify);
-  // GET https://api.spotify.com/v1/search
+function spotifyThis(value) {
 
-  // curl -X "GET" "https://api.spotify.com/v1/search?q=Thrash%20Unreal&type=track&limit=1&offset=2" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer BQDvTiklS_XreN-_zwcSwl3SjsqsqoaSc0EYLpKpkPVeUEJU2kppJlvscxcOuA3se8Nkwn5R0oa8jfyUWmKCk9sURp70O4DpY0dp5HVlmAt5_rWgWnCXpSH047MH9Rpt2VJ7Q6D7QGIl0mbIa9oAQQU"
+  spotify.search({ type: 'track', query: value },
+    function (err, data) {
+      if (err) {
+        return console.log('Error occurred: ' + err);
+      }
+      console.log(value)
+      var results = data.tracks.items[0];
+      // Display to the user:
+      // * Artist(s)
+      // * The song's name
+      // * A preview link of the song from Spotify
+      // * The album that the song is from
+      console.log(JSON.stringify("Song: " + results.name, null, 2))
+      console.log(JSON.stringify("Album: " + results.album.name, null, 2))
+      console.log(JSON.stringify("Artist: " + results.artists[0].name, null, 2))
+      console.log(JSON.stringify("Preview Link: " + results.preview_url, null, 2))
+    });
 
 }
 
@@ -213,13 +226,14 @@ function movieThis() {
     });
 }
 function doWhatItSays() {
-  fs.readFile("random.txt", "utf8", function(error, data) {
+  fs.readFile("random.txt", "utf8", function (error, data) {
     if (error) {
       return console.log(error);
     }
-    console.log(data)
-    var newValue = data.split(",");
-    console.log(newValue)
+    console.log(data);
+    var newValue = data.split(" ").slice(1).join(" ");
+    console.log(newValue);
+    spotifyThis(newValue);
   });
 
 }
