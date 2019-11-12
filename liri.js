@@ -40,11 +40,6 @@
 
 // --------------------------------------------
 
-// check if userCommand is "do-what-it-says" (DO THIS PART OF THE ASSIGNMENT ONLY IF THE OTHER THREE API CALLS WORK WELL!)
-
-// Use "fs" to read the random.txt file (hint, you will need to require fs! Look at activities 12 and 13)
-// The command will be whatever is before the comma. The search term will be whatever is after the comma.
-// Make the corresponding API call depending on what the command is.
 
 // If the user doesn't provide 1 of the 4 recognizable commands, display message to the user to try again 
 
@@ -63,6 +58,8 @@ require("dotenv").config();
 var keys = require("./keys.js");
 var Spotify = require("node-spotify-api");
 var spotify = new Spotify(keys.spotify);
+var moment = require('moment');
+var fs = require("fs");
 
 // Let's start by grabbing the input of the user and turning them into variables. 
 
@@ -75,143 +72,161 @@ console.log(firstValue);
 var value = "";
 // for loop to grab the user input. If it is more than one word, need it to turn into a string
 for (var i = 3; i < firstValue.length; i++) {
-    if (i > 1 && i < firstValue.length) {
-        // if more than one word for index 3, then combine them together. 
-        value = value + "+" + firstValue[i];
-    }
-    else {
-        // if just one word, make value equal that word. 
-        value += value[i]
-    }
+  if (i > 2 && i < firstValue.length) {
+    // if more than one word for index 3, then combine them together. 
+    value = value + "+" + firstValue[i];
+  }
+  else {
+    // if just one word, make value equal that word. 
+    value += value[i]
+  }
 }
 console.log(value);
 
 switch (command) {
-    case "concert-this":
-        concertThis();
-        break;
+  case "concert-this":
+    concertThis();
+    break;
 
-    case "spotify-this-song":
-        spotifyThis();
-        // data.track.items 
-        break;
+  case "spotify-this-song":
+    spotifyThis();
+    // data.track.items 
+    break;
 
-    case "movie-this":
-        movieThis();
-        break;
+  case "movie-this":
+    movieThis();
+    break;
 
-    case "do-what-it-says":
-        doWhatItSays();
-        break;
+  case "do-what-it-says":
+    doWhatItSays();
+    break;
 
-    default:
-        console.log("Make sure you use one of the four commands!")
+  default:
+    console.log("Make sure you use one of the four commands!")
+
+}
+
+function concertThis() {
+  // check if userCommand is "concert-this" 
+  //          If process arg = "concert-this" then (API CALL)
+  // run an API call using axios to the bands-in-town API
+  // inject the user's search term in the queryURL
+
+  // Display name of venue, venue location, and the date of the event 
+  // Format the date of the event to be MM/DD/YYYY (look at the moment node package documentation!)
+  var axios = require("axios");
+
+  //       * `https://rest.bandsintown.com/artists/celine+dion/events?app_id=codingbootcamp`
+  var queryUrl = "https://rest.bandsintown.com/artists/" + value + "/events?app_id=codingbootcamp";
+  console.log("Here's the URL search: " + queryUrl);
+  // https://rest.bandsintown.com/artists/celine+dion/events?app_id=codingbootcamp`
+  axios.get(queryUrl).then(
+    function (response, data) {
+      console.log("Here are the concerts coming up for: " + value);
+      console.log("-------------------");
+
+      var bandResults = response.data;
+      for (i = 0; i < bandResults.length; i++) {
+        // console.log(response.data);
+        console.log("They're Playing at: " + bandResults[i].venue.name);
+        console.log("City: " + bandResults[i].venue.city);
+        console.log("Region: " + bandResults[i].venue.region);
+        var concertDate = moment(bandResults[i].datetime).format('LL');
+        console.log("on: " + concertDate);
+        console.log("--------------------")
+      }
+
+    })
+    .catch(function (error) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log("---------------Data---------------");
+        console.log(error.response.data);
+        console.log("---------------Status---------------");
+        console.log(error.response.status);
+        console.log("---------------Status---------------");
+        console.log(error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an object that comes back with details pertaining to the error that occurred.
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error", error.message);
+      }
+      console.log(error.config);
+    });
+
+}
+function spotifyThis() {
+  // Let's grab the Spotify API using axios as well. 
+  // console.log(spotify);
+  // GET https://api.spotify.com/v1/search
+
+  // curl -X "GET" "https://api.spotify.com/v1/search?q=Thrash%20Unreal&type=track&limit=1&offset=2" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer BQDvTiklS_XreN-_zwcSwl3SjsqsqoaSc0EYLpKpkPVeUEJU2kppJlvscxcOuA3se8Nkwn5R0oa8jfyUWmKCk9sURp70O4DpY0dp5HVlmAt5_rWgWnCXpSH047MH9Rpt2VJ7Q6D7QGIl0mbIa9oAQQU"
 
 }
 
-function concertThis(){
-// check if userCommand is "concert-this" 
-//          If process arg = "concert-this" then (API CALL)
-// run an API call using axios to the bands-in-town API
-// inject the user's search term in the queryURL
+function movieThis() {
+  // Here's the variable for axios. 
+  var axios = require("axios");
 
-// Display name of venue, venue location, and the date of the event 
-// Format the date of the event to be MM/DD/YYYY (look at the moment node package documentation!)
-var axios = require("axios");
-
-// Then run a request with axios to the OMDB API with the movie specified
-axios.get("http://www.bandsintown.com/" + value).then(
-  function(response, data) {
-    console.log("Band Name: " + response.data[i].venue);
-  })
-  .catch(function(error) {
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.log("---------------Data---------------");
-      console.log(error.response.data);
-      console.log("---------------Status---------------");
-      console.log(error.response.status);
-      console.log("---------------Status---------------");
-      console.log(error.response.headers);
-    } else if (error.request) {
-      // The request was made but no response was received
-      // `error.request` is an object that comes back with details pertaining to the error that occurred.
-      console.log(error.request);
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.log("Error", error.message);
-    }
-    console.log(error.config);
-  });
-
-}
-function spotifyThis(){}
-
-function movieThis(){
-    // Here's the variable for axios. 
-    var axios = require("axios");
-
-// Here's the axios request. We need to code it so that the user input goes in place of the search variable. 
-
-// Details we need: 
-
-// Display to the user:
-// * Title of the movie.
-// * Year the movie came out.
-// * IMDB Rating of the movie.
-// * Rotten Tomatoes Rating of the movie.
-// * Country where the movie was produced.
-// * Language of the movie.
-// * Plot of the movie.
-// * Actors in the movie.
-
-axios.get("http://www.omdbapi.com/?t=" + value + "&y=&plot=short&apikey=trilogy").then(
-  function(response) {
+  axios.get("http://www.omdbapi.com/?t=" + value + "&y=&plot=short&apikey=trilogy").then(
+    function (response) {
       // * Title of the movie.
-    console.log("Title: " + response.data.Title);
-    // / * Year the movie came out.
-    console.log("Release Year: " + response.data.Year);
-    // * IMDB Rating of the movie.
-    console.log("IMDB Rating: " + response.data.Ratings[0].Value);
-    // * Rotten Tomatoes Rating of the movie.
-    console.log("Rotten Tomatoes Rating: " + response.data.Ratings[1].Value);
-    // * Country where the movie was produced.
-    console.log("Country of Production: " + response.data.Country);
-    // * Language of the movie.
-    console.log("Language: " + response.data.Language);
-    // * Plot of the movie.
-    console.log("Plot: " + response.data.Plot);
-    // * Actors in the movie.
-    console.log("Actors: " + response.data.Actors);
-  })
-  .catch(function(error) {
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.log("---------------Data---------------");
-      console.log(error.response.data);
-      console.log("---------------Status---------------");
-      console.log(error.response.status);
-      console.log("---------------Status---------------");
-      console.log(error.response.headers);
-    } else if (error.request) {
-      // The request was made but no response was received
-      // `error.request` is an object that comes back with details pertaining to the error that occurred.
-      console.log(error.request);
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.log("Error", error.message);
-    }
-    console.log(error.config);
-  });
+      console.log("Title: " + response.data.Title);
+      // / * Year the movie came out.
+      console.log("Release Year: " + response.data.Year);
+      // * IMDB Rating of the movie.
+      console.log("IMDB Rating: " + response.data.Ratings[0].Value);
+      // * Rotten Tomatoes Rating of the movie.
+      console.log("Rotten Tomatoes Rating: " + response.data.Ratings[1].Value);
+      // * Country where the movie was produced.
+      console.log("Country of Production: " + response.data.Country);
+      // * Language of the movie.
+      console.log("Language: " + response.data.Language);
+      // * Plot of the movie.
+      console.log("Plot: " + response.data.Plot);
+      // * Actors in the movie.
+      console.log("Actors: " + response.data.Actors);
+    })
+    .catch(function (error) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log("---------------Data---------------");
+        console.log(error.response.data);
+        console.log("---------------Status---------------");
+        console.log(error.response.status);
+        console.log("---------------Status---------------");
+        console.log(error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an object that comes back with details pertaining to the error that occurred.
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error", error.message);
+      }
+      console.log(error.config);
+    });
 }
-function doWhatitSays(){}
+function doWhatItSays() {
+  fs.readFile("random.txt", "utf8", function(error, data) {
+    if (error) {
+      return console.log(error);
+    }
+    console.log(data)
+    var newValue = data.split(",");
+    console.log(newValue)
+  });
 
-// check if userCommand is "concert-this" 
-//          If process arg = "concert-this" then (API CALL)
-// run an API call using axios to the bands-in-town API
-// inject the user's search term in the queryURL
+}
 
-// Display name of venue, venue location, and the date of the event 
-// Format the date of the event to be MM/DD/YYYY (look at the moment node package documentation!)
+
+// check if userCommand is "do-what-it-says" (DO THIS PART OF THE ASSIGNMENT ONLY IF THE OTHER THREE API CALLS WORK WELL!)
+
+// Use "fs" to read the random.txt file (hint, you will need to require fs! Look at activities 12 and 13)
+// The command will be whatever is before the comma. The search term will be whatever is after the comma.
+// Make the corresponding API call depending on what the command is.
