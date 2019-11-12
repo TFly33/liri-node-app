@@ -1,59 +1,4 @@
 
-
-// Here are the four things the app needs to do: 
-
-//    * `concert-this`
-
-// * `spotify-this-song`
-
-// * `movie-this`
-
-// * `do-what-it-says`
-
-// capture the command that the user puts in (process.argv[2]) I'll create a variable to make sure I can use it wherever I want, and not have to type process.argv in a million places. 
-
-
-// capture the user's search term (process.argv index 3 and later) (*use activity 18 level 2 for guidance on how to capture this!*)
-
-//          Can run a for loop to make sure all of the input is grabbed. 
-
-// Make a switch statement for the four commands. The default case should tell the user to try again.
-//     Can use the calculator for guidance on this. 
-
-
-// check if userCommand is "spotify-this-song"
-// Using Spotify Node package info and documentation, make a call to the Spotify API using the user's search term
-
-// Display to the user:
-// * Artist(s)
-// * The song's name
-// * A preview link of the song from Spotify
-// * The album that the song is from
-
-// Provide a default searchTerm if the user didn't provide an argument
-
-// -------------------------------------------
-
-// Still left for MOVIES: 
-
-// Provide a default search if the user didn't provide an argument.
-
-// --------------------------------------------
-
-
-// If the user doesn't provide 1 of the 4 recognizable commands, display message to the user to try again 
-
-// 15-BankJS has a structure that should help you with the assignment.
-// For help with Switch statements:
-// 06-Calculator and 15-BankJS
-// For help using Axios:
-// 17-OMDB_Axios and 18-OMDB_Axios_Students
-// Look at 18-OMDB_Axios_Students level 2 for guidance on how to take in a multi-word argument.
-// For help reading and parsing a file:
-// 12-ReadFile and 13-BestThingsEver (edited) 
-// For help with the Spotify node package, read the npm documentation. You can also look at 22-WeatherNPM for an example of another node package API that is not using Axios.
-
-
 require("dotenv").config();
 var keys = require("./keys.js");
 var Spotify = require("node-spotify-api");
@@ -65,39 +10,32 @@ var fs = require("fs");
 
 var command = process.argv[2];
 console.log(command);
-var firstValue = process.argv;
-console.log(firstValue);
 
-// We'll use an empty string rather than a push. Makes it a bit simpler. 
-var value = "";
-// for loop to grab the user input. If it is more than one word, need it to turn into a string
-for (var i = 3; i < firstValue.length; i++) {
-  if (i > 2 && i < firstValue.length) {
-    // if more than one word for index 3, then combine them together. 
-    value = value + "+" + firstValue[i];
-  }
-  else {
-    // if just one word, make value equal that word. 
-    value += value[i]
-  }
-}
+var value = process.argv.slice(3).join(" ");
+
 console.log(value);
 
 switch (command) {
   case "concert-this":
     //   If no user input, need a default. 
     if (!value) {
-        value = "U2"
+      value = "U2"
     }
     concertThis();
     break;
 
   case "spotify-this-song":
+    if (!value) {
+      value = "The Sign Ace of Base"
+    }
     spotifyThis(value);
     // data.track.items 
     break;
 
   case "movie-this":
+    if (!value) {
+      value = "Mr Nobody"
+    }
     movieThis();
     break;
 
@@ -111,33 +49,40 @@ switch (command) {
 }
 
 function concertThis() {
-  // check if userCommand is "concert-this" 
-  //          If process arg = "concert-this" then (API CALL)
-  // run an API call using axios to the bands-in-town API
-  // inject the user's search term in the queryURL
 
-  // Display name of venue, venue location, and the date of the event 
-  // Format the date of the event to be MM/DD/YYYY (look at the moment node package documentation!)
   var axios = require("axios");
-
-  //       * `https://rest.bandsintown.com/artists/celine+dion/events?app_id=codingbootcamp`
   var queryUrl = "https://rest.bandsintown.com/artists/" + value + "/events?app_id=codingbootcamp";
   console.log("Here's the URL search: " + queryUrl);
-  // https://rest.bandsintown.com/artists/celine+dion/events?app_id=codingbootcamp`
-  axios.get(queryUrl).then(
-    function (response, data) {
-      console.log("Here are the concerts coming up for: " + value);
-      console.log("-------------------");
 
+  axios.get(queryUrl).then(
+    function (response) {
+      console.log("-------------------");
+      console.log("Here are the concerts coming up for: " + value);
       var bandResults = response.data;
       for (i = 0; i < bandResults.length; i++) {
         // console.log(response.data);
-        console.log("They're Playing at: " + bandResults[i].venue.name);
-        console.log("City: " + bandResults[i].venue.city);
-        console.log("Region: " + bandResults[i].venue.region);
+        console.log(JSON.stringify("They're Playing at: " + bandResults[i].venue.name, null, 2));
+        console.log(JSON.stringify("City: " + bandResults[i].venue.city, null, 2));
+        console.log(JSON.stringify("Region: " + bandResults[i].venue.region, null, 2));
         var concertDate = moment(bandResults[i].datetime).format('LL');
-        console.log("on: " + concertDate);
+        console.log(JSON.stringify("on: " + concertDate, null, 2));
         console.log("--------------------")
+
+        var bandText =
+        "\n" + "Here are the concerts coming up for: " + value + "\n" +
+          "They're Playing at: " + bandResults[i].venue.name + "\n" +
+          "City: " + bandResults[i].venue.city + "\n" +
+          "on: " + concertDate + "\n" +
+          "-----------------------------------------";
+
+        var fs = require("fs");
+
+        fs.appendFile("log.txt", bandText, function (err) {
+
+          if (err) { console.log(err) }
+          // else { console.log("Content Added") }
+          // end of appendFile
+        });
       }
 
     })
@@ -164,7 +109,7 @@ function concertThis() {
 
 }
 function spotifyThis(value) {
-
+  // This function needs to pass an argument of value so that it will work with the "do what it says" function. Otherwise I will get an error message. 
   spotify.search({ type: 'track', query: value },
     function (err, data) {
       if (err) {
@@ -172,17 +117,30 @@ function spotifyThis(value) {
       }
       console.log(value)
       var results = data.tracks.items[0];
-      // Display to the user:
-      // * Artist(s)
-      // * The song's name
-      // * A preview link of the song from Spotify
-      // * The album that the song is from
+      console.log("--------------------------------------------")
       console.log(JSON.stringify("Song: " + results.name, null, 2))
       console.log(JSON.stringify("Album: " + results.album.name, null, 2))
       console.log(JSON.stringify("Artist: " + results.artists[0].name, null, 2))
       console.log(JSON.stringify("Preview Link: " + results.preview_url, null, 2))
-    });
+      console.log("--------------------------------------------")
 
+      var songText =
+        "\n" + "Song: " + results.name + "\n" +
+        "Album: " + results.album.name + "\n" +
+        "Artist: " + results.artists[0].name + "\n" +
+        "Preview Link: " + results.preview_url + "\n" +
+        "-----------------------------------------";
+
+      var fs = require("fs");
+
+      fs.appendFile("log.txt", songText, function (err) {
+
+        if (err) { console.log(err) }
+        // else { console.log("Content Added") }
+        // end of appendFile
+      });
+
+    });
 }
 
 function movieThis() {
@@ -191,6 +149,7 @@ function movieThis() {
 
   axios.get("http://www.omdbapi.com/?t=" + value + "&y=&plot=short&apikey=trilogy").then(
     function (response) {
+      console.log("-----------------------------")
       // * Title of the movie.
       console.log("Title: " + response.data.Title);
       // / * Year the movie came out.
@@ -207,6 +166,28 @@ function movieThis() {
       console.log("Plot: " + response.data.Plot);
       // * Actors in the movie.
       console.log("Actors: " + response.data.Actors);
+      console.log("-----------------------------")
+
+      var movieText =
+        "\n" + "Title: " + response.data.Title + "\n" +
+        "Release Year: " + response.data.Year + "\n" +
+        "IMDB Rating: " + response.data.Ratings[0].Value + "\n" +
+        "Rotten Tomatoes Rating: " + response.data.Ratings[1].Value + "\n" +
+        "Country of Production: " + response.data.Country + "\n" +
+        "Language: " + response.data.Language + "\n" +
+        "Plot: " + response.data.Plot + "\n" +
+        "Actors: " + response.data.Actors + "\n" +
+        "-----------------------------------------";
+
+      var fs = require("fs");
+
+      fs.appendFile("log.txt", movieText, function (err) {
+
+        if (err) { console.log(err) }
+        // else { console.log("Content Added") }
+        // end of appendFile
+      });
+
     })
     .catch(function (error) {
       if (error.response) {
@@ -234,17 +215,9 @@ function doWhatItSays() {
     if (error) {
       return console.log(error);
     }
-    console.log(data);
     var newValue = data.split(" ").slice(1).join(" ");
-    console.log(newValue);
     spotifyThis(newValue);
   });
 
 }
 
-
-// check if userCommand is "do-what-it-says" (DO THIS PART OF THE ASSIGNMENT ONLY IF THE OTHER THREE API CALLS WORK WELL!)
-
-// Use "fs" to read the random.txt file (hint, you will need to require fs! Look at activities 12 and 13)
-// The command will be whatever is before the comma. The search term will be whatever is after the comma.
-// Make the corresponding API call depending on what the command is.
