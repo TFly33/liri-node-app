@@ -85,6 +85,10 @@ console.log(value);
 
 switch (command) {
   case "concert-this":
+    //   If no user input, need a default. 
+    if (!value) {
+        value = "U2"
+    }
     concertThis();
     break;
 
