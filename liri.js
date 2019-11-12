@@ -9,11 +9,11 @@ var fs = require("fs");
 // Let's start by grabbing the input of the user and turning them into variables. 
 
 var command = process.argv[2];
-console.log(command);
+// console.log(command);
 
 var value = process.argv.slice(3).join(" ");
 
-console.log(value);
+// console.log(value);
 
 switch (command) {
   case "concert-this":
